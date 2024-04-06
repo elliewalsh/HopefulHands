@@ -1,0 +1,73 @@
+{
+  "name": "cit-project",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.2.1",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "assert": "^2.0.0",
+    "axios": "^1.6.8",
+    "bcryptjs": "^2.4.3",
+    "browserify-fs": "^1.0.0",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "crypto-browserify": "^3.12.0",
+    "eslint-plugin-react": "^7.34.1",
+    "express": "^4.19.1",
+    "fs": "^0.0.1-security",
+    "fs-extra": "^11.2.0",
+    "graceful-fs": "^4.2.11",
+    "http-browserify": "^1.7.0",
+    "https-browserify": "^1.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.2.2",
+    "multer": "^1.4.5-lts.1",
+    "node-polyfill-webpack-plugin": "^3.0.0",
+    "os": "^0.1.2",
+    "os-browserify": "^0.3.0",
+    "path": "^0.12.7",
+    "path-browserify": "^1.0.1",
+    "querystring": "^0.2.1",
+    "querystring-es3": "^0.2.1",
+    "react-app-rewired": "^2.1.9",
+    "react-router-dom": "^5.2.0",
+    "stream": "^0.0.2",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.3",
+    "util": "^0.12.5",
+    "web-vitals": "^3.5.2",
+    "webpack": "^5.91.0"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.0"
+  }
+}
