@@ -163,6 +163,45 @@ app.post('/userData', authenticateUser, async (req, res) => {
   }
 });
 
+app.post("/userData", async (req, res) => {
+  const { token } = req.body;
+  try {
+    const user = jwt.verify(token, JWT_SECRET);
+    console.log(user);
+
+    const useremail = user.email;
+    User.findOne({ email: useremail })
+      .then((data) => {
+        res.send({ status: "ok", data: data });
+      })
+      .catch((error) => {
+        res.send({ status: "error", data: error });
+      });
+  } catch (error) {}
+});
+
+app.get("/api/user", async (req, res) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const decodedToken = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ email: decodedToken.email });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // create product
 app.post('/createProduct', authenticateUser, upload.array('productImages', 5), async (req, res) => {
   try {

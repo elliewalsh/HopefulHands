@@ -40,7 +40,11 @@ export default function Login() {
           alert("Login successful");
           window.localStorage.setItem("token", data.data);
           window.localStorage.setItem("loggedIn", true);
+          // Redirect to account page
           history.push("/account");
+
+          // Trigger a custom event to notify the Navbar component of login
+          window.dispatchEvent(new Event('loginSuccess'));
         } else {
           setLoginError(data.error);
         }

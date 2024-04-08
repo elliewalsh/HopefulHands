@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Button } from "./Button";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
-import useUser from "../hooks/useUser";
+import axios from "axios";
 
 function Navbar() {
   const [click, setClick] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [button, setButton] = useState(true);
-  const userData = useUser();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   const handleClick = () => setClick(!click);
   const closeMobileMenu = () => setClick(false);
@@ -31,6 +32,52 @@ function Navbar() {
 
   useEffect(() => {
     showButton();
+  }, []);
+
+  useEffect(() => {
+    const handleLoginSuccess = async () => {
+      setIsLoggedIn(true);
+      const token = localStorage.getItem("token");
+      try {
+        const response = await axios.get("http://localhost:5321/api/user", {
+          headers: {
+            Authorization: token,
+          },
+        });
+        setUserData(response.data);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+  
+    window.addEventListener("loginSuccess", handleLoginSuccess);
+  
+    return () => {
+      window.removeEventListener("loginSuccess", handleLoginSuccess);
+    };
+  }, []);
+
+  useEffect(() => {
+    const loggedIn = window.localStorage.getItem("loggedIn") === "true";
+    setIsLoggedIn(loggedIn);
+
+    if (loggedIn) {
+      const fetchUserData = async () => {
+        const token = localStorage.getItem("token");
+        try {
+          const response = await axios.get("http://localhost:5321/api/user", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setUserData(response.data);
+        } catch (error) {
+          console.error("Failed to fetch user data:", error);
+        }
+      };
+
+      fetchUserData();
+    }
   }, []);
 
   window.addEventListener("resize", showButton);
@@ -131,7 +178,14 @@ function Navbar() {
               </>
             ) : null}
 
-            {!userData ? (
+            {isLoggedIn ? (
+              <li className="nav-item">
+                <Link to="/account" className="nav-links" onClick={closeMobileMenu}>
+                  {userData && userData.fname}
+                  <i className="fa-solid fa-user"></i>
+                </Link>
+              </li>
+            ) : (
               <>
                 <li>
                   <Link to="/sign-up" className="nav-links-mobile" onClick={closeMobileMenu}>
@@ -140,13 +194,6 @@ function Navbar() {
                 </li>
                 {button && <Button buttonStyle="btn--outline">SIGN UP</Button>}
               </>
-            ) : (
-              <li className="nav-item">
-                <Link to="/account" className="nav-links" onClick={closeMobileMenu}>
-                  {userData.fname} {/* Display the user's first name */}
-                  <i className="fa-solid fa-user"></i>
-                </Link>
-              </li>
             )}
           </ul>
         </div>
