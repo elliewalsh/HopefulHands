@@ -45,38 +45,28 @@ function Navbar() {
           },
         });
         setUserData(response.data);
+        localStorage.setItem("userData", JSON.stringify(response.data)); // Store user data in localStorage
       } catch (error) {
         console.error("Failed to fetch user data:", error);
       }
     };
-  
+
     window.addEventListener("loginSuccess", handleLoginSuccess);
-  
+
     return () => {
       window.removeEventListener("loginSuccess", handleLoginSuccess);
     };
   }, []);
 
   useEffect(() => {
-    const loggedIn = window.localStorage.getItem("loggedIn") === "true";
+    const loggedIn = localStorage.getItem("loggedIn") === "true";
     setIsLoggedIn(loggedIn);
 
     if (loggedIn) {
-      const fetchUserData = async () => {
-        const token = localStorage.getItem("token");
-        try {
-          const response = await axios.get("http://localhost:5321/api/user", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          setUserData(response.data);
-        } catch (error) {
-          console.error("Failed to fetch user data:", error);
-        }
-      };
-
-      fetchUserData();
+      const storedUserData = localStorage.getItem("userData");
+      if (storedUserData) {
+        setUserData(JSON.parse(storedUserData)); // Retrieve user data from localStorage
+      }
     }
   }, []);
 
