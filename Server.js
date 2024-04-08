@@ -54,6 +54,7 @@ const upload = multer({
   },
 });
 
+
 //Register as a user
 app.post("/register", async (req, res) => {
   const { fname, lname, email, password, userType } = req.body;
@@ -62,7 +63,7 @@ app.post("/register", async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({ error: 'Email already registered' });
+      return res.json({ status: "error", error: "Email already registered" });
     }
 
     const encryptedPassword = await bcrypt.hash(password, 10);
@@ -95,7 +96,7 @@ app.post("/login-user", async (req, res) => {
       const token = jwt.sign({ email: user.email, userType: user.userType }, JWT_SECRET);
       res.json({ status: 'ok', data: token });
     } else {
-      res.status(401).json({ error: 'Invalid Password' });
+      res.status(401).json({ error: 'Invalid Email or Password' });
     }
   } catch (error) {
     console.error("Error logging in user:", error);
@@ -103,39 +104,62 @@ app.post("/login-user", async (req, res) => {
   }
 });
 
-// // Reset Password
-// app.post("/reset-password", async (req, res) => {
-//   const { email, password } = req.body;
-//   try {
-//     // Find the user by email
-//     const user = await User.findOne({ email });
-//     if (!user) {
-//       return res.json({ status: "error", error: "User not found" });
-//     }
+// Reset Password
+app.post("/reset-password", async (req, res) => {
+  const { email, password } = req.body;
 
-//     // Update the user's password
-//     user.password = password;
-//     await user.save();
-//     res.json({ status: "ok", message: "Password reset successful" });
-//   } catch (error) {
-//     console.log(error);
-//     res.json({ status: "error", error: "An error occurred" });
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.json({ status: "error", error: "User not found" });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ status: "ok", message: "Password reset successful" });
+  } catch (error) {
+    console.log(error);
+    res.json({ status: "error", error: "An error occurred" });
+  }
+});
+
+// // Authenticate User middleware
+// function authenticateUser(req, res, next) {
+//   const token = req.headers.authorization;
+
+//   if (!token) {
+//     return res.status(401).json({ error: 'No token provided' });
 //   }
-// });
 
+//   try {
+//     const decoded = jwt.verify(token, JWT_SECRET);
+//     req.user = { email: decoded.email };
+//     next();
+//   } catch (error) {
+//     console.error("Error verifying token:", error);
+//     res.status(401).json({ error: 'Unauthorized' });
+//   }
+// }
 
-// Authenticate User
+// Get user data
 app.post('/userData', authenticateUser, async (req, res) => {
   try {
-      const userEmail = req.user.email;
-      const userData = await User.findOne({ email: userEmail });
-      if (!userData) {
-          return res.status(404).json({ error: 'User not found' });
-      }
-      res.send({ status: 'ok', userData: userData }); // Return all user data
+    const userEmail = req.user.email;
+    const userData = await User.findOne({ email: userEmail });
+    if (!userData) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.send({ status: 'ok', userData: userData }); // Return all user data
   } catch (error) {
-      console.error("Error fetching user data:", error);
-      res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching user data:", error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
