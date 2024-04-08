@@ -34,7 +34,7 @@ function App() {
           <Route path="/chatbox" component={Chatbox} />
           <Route path="/sign-up" exact component={SignUp} />
           <Route path="/login" exact component={Login} />
-          {/* <Route path="/reset-password" exact component={ResetPassword} /> */}
+          <Route path="/reset-password" exact component={ResetPassword} />
           <Route path="/account" exact component={Account} />
           {ADMIN_USER.includes(userType) ? (
             <Route path="/products" component={Products} />
