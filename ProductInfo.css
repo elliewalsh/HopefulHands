@@ -1,0 +1,73 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align items to the top */
+  padding: 20px; /* Add some padding */
+}
+
+.product-info-container {
+  display: flex;
+  max-width: 800px; /* Limit the width of the product info */
+  border-radius: 20px;
+}
+
+.product-info-image {
+  flex: 0; /* Make the image take up remaining space */
+  /* padding-right: 20px; Add some padding to the right */
+  width: 500px; /* Set a smaller explicit width for the product image */
+  margin-right: 10px;
+  margin-top: 40px;
+  border-radius: 20px;
+}
+
+.product-info-image img {
+  max-width: 100%; /* Make sure the image fills its container */
+  height: auto; /* Maintain aspect ratio */
+  
+}
+
+.product-info-details {
+  flex: 1; /* Make the details take up remaining space */
+  padding: 20px; /* Add some padding */
+  background-color: #f9f9f9; /* Light background color */
+  border-left: 1px solid #ddd; /* Add a border between image and details */
+  margin-top: 40px;
+  border-radius: 20px;
+}
+
+.product-info-details h1 {
+  margin-top: 0; /* Remove top margin from heading */
+  text-decoration: none;
+  font-size: 24px; /* Adjust font size */
+  color: #333; /* Darken text color */
+}
+
+.product-info-details p {
+  margin-bottom: 10px; /* Add bottom margin to paragraphs */
+  text-decoration: none;
+  color: #555; /* Dark gray text color */
+  font-size: 16px; /* Adjust font size */
+}
+
+.product-actions {
+  width: 100%; /* Take up full width */
+  display: flex;
+  justify-content: flex-end; /* Align button to the right */
+  margin-top: 20px; /* Add some top margin */
+}
+
+.product-actions .button {
+  padding: 12px 24px; /* Adjust padding */
+  font-size: 16px; /* Adjust font size */
+  border-radius: 6px; /* Add some border radius */
+  background-color: rgb(37, 174, 184);
+  color: #fff; /* White text color */
+  border: none; /* Remove border */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.product-actions .button:hover {
+  background-color: rgb(26, 142, 150);
+}

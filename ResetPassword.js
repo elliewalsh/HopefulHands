@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import "./ResetPassword.css";
 
 function ResetPassword() {
-  const [email, setEmail] = useState("");
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const emailFromParam = searchParams.get("email");
+
+  const [email, setEmail] = useState(emailFromParam || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +22,6 @@ function ResetPassword() {
       return;
     }
     setPasswordError("");
-
     fetch("http://localhost:5321/reset-password", {
       method: "POST",
       headers: {
@@ -56,6 +59,16 @@ function ResetPassword() {
         <form onSubmit={handleSubmit}>
           <div className="inputs">
             <div className="input">
+              <i className="fa-solid fa-envelope"></i>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                readOnly
+              />
+            </div>
+            <div className="input">
               <i className="fa-solid fa-lock"></i>
               <input
                 type={showPassword ? "text" : "password"}
@@ -67,7 +80,6 @@ function ResetPassword() {
                 onClick={togglePasswordVisibility}
               ></i>
             </div>
-
             <div className="input">
               <i className="fa-solid fa-lock"></i>
               <input
@@ -85,7 +97,6 @@ function ResetPassword() {
                 <i className="fa-solid fa-circle-xmark"></i> {passwordError}
               </p>
             )}
-
             <div className="submit-container">
               <button type="submit" className="btn btn-primary">
                 Reset Password
