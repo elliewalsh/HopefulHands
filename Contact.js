@@ -2,37 +2,80 @@ import React, { useEffect, useState } from "react";
 import ChatContainer from "../ChatContainer/ChatContainer";
 import "./Contact.css";
 
-function Contact() {
+function Contact({ userData, donatorId }) {
   const [users, setUsers] = useState([]);
-  const [currentChatUser, setCurrentChatUser] = useState('');
+  const [currentChatUser, setCurrentChatUser] = useState(null);
 
+  // Update the Contact component to fetch donors
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchDonators = async () => {
       try {
-        const token = window.localStorage.getItem('token');
+        const token = window.localStorage.getItem("token");
         if (token) {
-          const response = await fetch('http://localhost:5321/userData', {
-            method: 'POST',
+          const response = await fetch("http://localhost:5321/api/donators", {
+            method: "GET",
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`, // Include the token in the headers
+              Authorization: `Bearer ${token}`,
             },
           });
-          const responseData = await response.json();
-          console.log('Response Data:', responseData);
-          if (Array.isArray(responseData.userData)) {
-            setUsers(prevUsers => [...prevUsers, ...responseData.userData]);
-          } else {
-            setUsers(prevUsers => [...prevUsers, responseData.userData]);
-          }
+          const donatorData = await response.json();
+          setUsers(donatorData);
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching donators:", error);
       }
     };
 
-    fetchUserData();
+    fetchDonators();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const token = window.localStorage.getItem('token');
+  //       if (token) {
+  //         const response = await fetch('http://localhost:5321/userData', {
+  //           method: 'POST',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //             'Authorization': `Bearer ${token}`, // Include the token in the headers
+  //           },
+  //         });
+  //         const responseData = await response.json();
+  //         console.log('Response Data:', responseData);
+
+  //         // Log the structure of responseData.userData
+  //         console.log('User Data:', responseData.userData);
+
+  //         // Filter out the logged-in user's data from the fetched user data
+  //         const otherUsersData = responseData.userData.filter(user => user._id !== userData._id);
+
+  //         // Update the state with other users' data
+  //         setUsers(otherUsersData);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching user data:', error);
+  //     }
+  //   };
+
+  //   fetchUserData();
+  // }, [userData]); // Add userData to dependency array to re-fetch data when user data changes
+
+  // useEffect(() => {
+  //   const fetchDonatorData = async () => {
+  //     try {
+  //       const response = await fetch(`http://localhost:5321/api/users/${donatorId}`);
+  //       const donatorData = await response.json();
+  //       setCurrentChatUser(donatorData);
+  //     } catch (error) {
+  //       console.error('Error fetching donator data:', error);
+  //     }
+  //   };
+
+  //   if (donatorId) {
+  //     fetchDonatorData();
+  //   }
+  // }, [donatorId]);
 
   const handleUser = (user) => {
     setCurrentChatUser(user);
@@ -48,9 +91,15 @@ function Contact() {
             className="searchbarforcontact"
           />
         </div>
+        {/* Display donors as contacts */}
         <div className="usersDetailContainer">
           {users.map((user, index) => (
-            <div key={index} className="userContainer" onClick={() => handleUser(user)}>
+            <div
+              key={index}
+              className="userContainer"
+              onClick={() => handleUser(user)}
+            >
+              {/* Display user information */}
               <img src="./images/img-7.jpg" className="chatuserimage" alt="" />
               <div style={{ marginLeft: "10px" }}>
                 <p
@@ -79,7 +128,7 @@ function Contact() {
         </div>
       </div>
 
-      <ChatContainer currentChatUser={currentChatUser} />
+      <ChatContainer currentChatUser={currentChatUser} currentUser={userData} />
     </div>
   );
 }

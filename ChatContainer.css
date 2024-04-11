@@ -1,5 +1,6 @@
 .mainChatContainer{
     flex: 2.8;
+    
 }
 
 .userProfile{
@@ -20,6 +21,7 @@
     height: 60vh;
     overflow:hidden;
     overflow-y: scroll;
+    
 }
 
 .msgInput{
@@ -34,7 +36,7 @@
 
 .msgSenderContainer{
     display: flex;
-    width: 65pc;
+    width: 68pc;
     background-color: lightgray;
     margin-top: 20px;
     padding: 5px;
