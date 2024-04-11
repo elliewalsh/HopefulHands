@@ -86,7 +86,7 @@ function ProductDisplay() {
             </div>
             <div className="product-details">
               <h3>{product.product}</h3>
-              <p>{product.description}</p>
+              {/* <p>{product.description}</p> */}
               <p>{product.category}</p>
               <div className="product-actions">
                 <button onClick={handleMessageClick} className="button button-update">

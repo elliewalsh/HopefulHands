@@ -61,7 +61,7 @@ body {
   
   .fa-magnifying-glass {
     position: absolute;
-    top: 75%;
+    top: 50%;
     right: 10px;
     transform: translateY(-50%);
     color: rgb(148, 147, 147);

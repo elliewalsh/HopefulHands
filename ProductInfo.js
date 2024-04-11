@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import './ProductInfo.css'; // Import CSS file
+
 
 function ProductInfo() {
     const { id } = useParams();
     const [product, setProduct] = useState({});
+    const [donatorData, setDonatorData] = useState({})
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const history = useHistory();
@@ -15,7 +17,7 @@ function ProductInfo() {
             try {
                 const response = await axios.get(`http://localhost:5321/products/${id}`);
                 setProduct(response.data);
-                console.log(response.data);
+                setDonatorData({donatorId: response.data.donatedByContact});
             } catch (err) {
                 setError('Failed to fetch product details. Please try again later.');
             } finally {
@@ -26,10 +28,16 @@ function ProductInfo() {
         fetchProduct();
     }, [id]);
 
+
     const handleMessageClick = (event) => {
         event.stopPropagation();
-        history.push('/chatbox');
-    };
+        history.push({
+          pathname: '/chatbox',
+          state: {
+            donatorId: product.donatedByContact,
+          },
+        });
+      };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -38,6 +46,7 @@ function ProductInfo() {
     if (error) {
         return <div>{error}</div>;
     }
+
 
     return (
         <div className="container">
@@ -54,8 +63,9 @@ function ProductInfo() {
                 </div>
             </div>
             <div className="product-actions">
-                <button onClick={(event) => handleMessageClick(event)} className="button button-update">
-                    Message Donator
+                <button className="button button-update">
+                    <Link to = {{ pathname: '/chatbox', state: donatorData}}>Message Donator</Link>
+                   
                 </button>
             </div>
         </div>

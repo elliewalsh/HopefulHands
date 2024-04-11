@@ -7,8 +7,9 @@
 
 .product-info-container {
   display: flex;
-  max-width: 800px; /* Limit the width of the product info */
+  /* max-width: 800px; Limit the width of the product info */
   border-radius: 20px;
+  width: 95%;
 }
 
 .product-info-image {
@@ -33,6 +34,7 @@
   border-left: 1px solid #ddd; /* Add a border between image and details */
   margin-top: 40px;
   border-radius: 20px;
+  
 }
 
 .product-info-details h1 {
@@ -40,13 +42,16 @@
   text-decoration: none;
   font-size: 24px; /* Adjust font size */
   color: #333; /* Darken text color */
+  
 }
 
 .product-info-details p {
   margin-bottom: 10px; /* Add bottom margin to paragraphs */
   text-decoration: none;
   color: #555; /* Dark gray text color */
-  font-size: 16px; /* Adjust font size */
+  font-size: 18px; /* Adjust font size */
+  margin-bottom: 30px;
+  margin-top: 5px;
 }
 
 .product-actions {

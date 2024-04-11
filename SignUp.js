@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import '../../App.css';
-import './SignUp.css';
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import "../../App.css";
+import "./SignUp.css";
 
 const SECRET_KEY = "ewalsh";
+
+const validatePassword = (password) => {
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+  return passwordRegex.test(password);
+};
 
 export default function SignUp() {
   const [fname, setFname] = useState("");
@@ -13,7 +19,7 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userType, setUserType] = useState("");
   const [secretKey, setSecretKey] = useState("");
-  const [action, setAction] = useState('Sign Up');
+  const [action, setAction] = useState("Sign Up");
   const [passwordError, setPasswordError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +28,19 @@ export default function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Check password requirements are met
+    if (!fname || !lname || !email || !password || !confirmPassword) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters and contain an uppercase letter, a number, and a special character (!@#$%^&*)"
+      );
+      return;
+    }
 
     // Check if userType is empty or null
     if (!userType) {
@@ -81,6 +100,11 @@ export default function SignUp() {
 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setEmailError(""); // Clear the email error when the email input changes
   };
 
   return (
@@ -144,7 +168,8 @@ export default function SignUp() {
               <input
                 type="email"
                 placeholder="Email"
-                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                onChange={handleEmailChange}
               />
             </div>
 
@@ -156,7 +181,9 @@ export default function SignUp() {
                 onChange={(e) => setPassword(e.target.value)}
               />
               <i
-                className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                className={`fa-solid ${
+                  showPassword ? "fa-eye-slash" : "fa-eye"
+                }`}
                 onClick={togglePasswordVisibility}
               ></i>
             </div>
@@ -169,7 +196,9 @@ export default function SignUp() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
               <i
-                className={`fa-solid ${showConfirmPassword ? "fa-eye-slash" : "fa-eye"}`}
+                className={`fa-solid ${
+                  showConfirmPassword ? "fa-eye-slash" : "fa-eye"
+                }`}
                 onClick={toggleConfirmPasswordVisibility}
               ></i>
             </div>
@@ -178,7 +207,7 @@ export default function SignUp() {
                 <i className="fa-solid fa-circle-xmark"></i> {passwordError}
               </p>
             )}
-             {emailError && (
+            {emailError && (
               <p className="error-message">
                 <i className="fa-solid fa-circle-xmark"></i> {emailError}
               </p>
