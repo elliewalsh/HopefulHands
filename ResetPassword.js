@@ -6,6 +6,10 @@ function ResetPassword() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const emailFromParam = searchParams.get("email");
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    return passwordRegex.test(password);
+  };
 
   const [email, setEmail] = useState(emailFromParam || "");
   const [password, setPassword] = useState("");
@@ -17,6 +21,20 @@ function ResetPassword() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    //Check password meets requirements
+  
+      if (!password || !confirmPassword) {
+        alert("Please fill in all fields");
+        return;
+      }
+  
+      if (!validatePassword(password)) {
+        setPasswordError("Password must be at least 8 characters and contain an uppercase letter, a number, and a special character (!@#$%^&*)");
+        return;
+      }
+    
+    // Check passwords match
     if (password !== confirmPassword) {
       setPasswordError("Passwords do not match");
       return;

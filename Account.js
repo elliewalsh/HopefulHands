@@ -76,7 +76,21 @@ const Account = () => {
 
   const handleMarkAsDonated = async (listingId) => {
     try {
-      await axios.put(`http://localhost:5321/api/markAsDonated/${listingId}`);
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `http://localhost:5321/api/markAsDonated/${listingId}`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUserListings(
+        userListings.map((listing) =>
+          listing._id === listingId ? { ...listing, isDonated: true } : listing
+        )
+      );
     } catch (err) {
       setError("Failed to mark as donated. Please try again later. " + err);
     }
@@ -85,11 +99,15 @@ const Account = () => {
   const handleUnmarkAsDonated = async (listingId) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:5321/api/unmarkAsDonated/${listingId}`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.put(
+        `http://localhost:5321/api/unmarkAsDonated/${listingId}`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setUserListings(
         userListings.map((listing) =>
           listing._id === listingId ? { ...listing, isDonated: false } : listing
@@ -108,7 +126,9 @@ const Account = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUserListings(userListings.filter((listing) => listing._id !== listingId));
+      setUserListings(
+        userListings.filter((listing) => listing._id !== listingId)
+      );
     } catch (err) {
       setError("Failed to delete listing. Please try again later. " + err);
     }
@@ -154,6 +174,12 @@ const Account = () => {
     }
   };
 
+  const truncateDescription = (description, maxLength) => {
+    return description.length > maxLength
+      ? `${description.substring(0, maxLength)}...`
+      : description;
+  };
+
   return (
     <div className="container-account">
       {loading && <p>Loading...</p>}
@@ -172,15 +198,27 @@ const Account = () => {
                   <>
                     <div className="account-text">
                       First Name:
-                      <input type="text" value={fname} onChange={handleNameChange} />
+                      <input
+                        type="text"
+                        value={fname}
+                        onChange={handleNameChange}
+                      />
                     </div>
                     <div className="account-text">
                       Last Name:
-                      <input type="text" value={lname} onChange={handleLnameChange} />
+                      <input
+                        type="text"
+                        value={lname}
+                        onChange={handleLnameChange}
+                      />
                     </div>
                     <div className="account-text">
                       Email:
-                      <input type="email" value={email} onChange={handleEmailChange} />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={handleEmailChange}
+                      />
                     </div>
                   </>
                 ) : (
@@ -192,7 +230,9 @@ const Account = () => {
                   </>
                 )}
                 <div className="account-text">
-                  User Type: {userData.userType.charAt(0).toUpperCase() + userData.userType.slice(1)}
+                  User Type:{" "}
+                  {userData.userType.charAt(0).toUpperCase() +
+                    userData.userType.slice(1)}
                 </div>
                 <div className="button-group">
                   {editing ? (
@@ -214,84 +254,93 @@ const Account = () => {
             </button>
           </div>
           {!isAdmin && (
-  <>
-    <div className="header">
-      <div className="text">My Listings</div>
-      <div className="underline"></div>
-    </div>
-    <div className="product-grid">
-  {userListings.map((listing, index) => (
-    <div
-      key={index}
-      className={`product-card ${
-        selectedListing && selectedListing._id === listing._id ? "selected" : ""
-      } ${listing.isDonated ? "donated" : ""}`}
-    >
-      <div className="product-image">
-        {listing.imageUrls &&
-          listing.imageUrls.map((imageUrl, index) => (
-            <img
-              key={index}
-              src={`http://localhost:3000/${imageUrl}`}
-              alt={listing.product}
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
-            />
-          ))}
-      </div>
-      {listing.isDonated && (
-        <div className="blur-cover">
-          <span>Donated</span>
-        </div>
-      )}
-      <div className="product-details">
-        <h3>{listing.product}</h3>
-        <p>{listing.description}</p>
-        <p>{listing.category}</p>
-        <div className="button-group">
-          {showUpdateOptions && selectedListing && selectedListing._id === listing._id ? (
-            <UpdateListing listing={selectedListing} onUpdateSuccess={handleUpdateSuccess} />
-          ) : (
             <>
-              <div className="button-row">
-                <button
-                  onClick={() => handleUpdateClick(listing)}
-                  className="button update-button"
-                  disabled={showUpdateOptions}
-                >
-                  <i className="fa-regular fa-pen-to-square"></i>
-                </button>
-                <button
-                  onClick={() => handleDeleteListing(listing._id)}
-                  className="button delete-button"
-                >
-                  <i className="fa-solid fa-trash"></i>
-                </button>
+              <div className="header">
+                <div className="text">My Listings</div>
+                <div className="underline"></div>
               </div>
-              <button
-                onClick={() => handleMarkAsDonated(listing._id)}
-                className="button mark-donated-button"
-                disabled={listing.isDonated}
-              >
-                Mark as Donated
-              </button>
-              <button
-                onClick={() => handleUnmarkAsDonated(listing._id)}
-                className="button unmark-donated-button"
-                disabled={!listing.isDonated}
-              >
-                Unmark as Donated
-              </button>
+              <div className="product-grid">
+                {userListings.map((listing, index) => (
+                  <div
+                    key={index}
+                    className={`product-card ${
+                      selectedListing && selectedListing._id === listing._id
+                        ? "selected"
+                        : ""
+                    } ${listing.isDonated ? "donated" : ""}`}
+                  >
+                    <div className="product-image">
+                      {listing.imageUrls &&
+                        listing.imageUrls.map((imageUrl, index) => (
+                          <img
+                            key={index}
+                            src={`http://localhost:3000/${imageUrl}`}
+                            alt={listing.product}
+                            style={{ maxWidth: "100%", maxHeight: "100%" }}
+                          />
+                        ))}
+                    </div>
+                    {listing.isDonated && (
+                      <div className="blur-cover">
+                        <span>Donated</span>
+                      </div>
+                    )}
+                    <div className="product-details">
+                      <h3>{listing.product}</h3>
+                      <p>{truncateDescription(listing.description, 50)}</p>
+                      <p>{listing.category}</p>
+                      <div className="button-group">
+                        {showUpdateOptions &&
+                        selectedListing &&
+                        selectedListing._id === listing._id ? (
+                          <UpdateListing
+                            listing={selectedListing}
+                            onUpdateSuccess={handleUpdateSuccess}
+                          />
+                        ) : (
+                          <>
+                            <div className="button-row">
+                              <button
+                                onClick={() => handleUpdateClick(listing)}
+                                className="button update-button"
+                                disabled={
+                                  showUpdateOptions || listing.isDonated
+                                }
+                              >
+                                <i className="fa-regular fa-pen-to-square"></i>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteListing(listing._id)}
+                                className="button delete-button"
+                                disabled={listing.isDonated}
+                              >
+                                <i className="fa-solid fa-trash"></i>
+                              </button>
+                            </div>
+                            <button
+                              onClick={() => handleMarkAsDonated(listing._id)}
+                              className="button mark-donated-button"
+                              disabled={listing.isDonated}
+                            >
+                              Mark as Donated
+                            </button>
+                            <button
+                              onClick={() => handleUnmarkAsDonated(listing._id)}
+                              className="button unmark-donated-button"
+                              disabled={!listing.isDonated}
+                            >
+                              Unmark as Donated
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </>
           )}
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
-  </>
-)}
- </>
-
+        </>
       ) : (
         <>
           <div>

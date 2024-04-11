@@ -1,57 +1,92 @@
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-    /* background-image: url('/images/img-6.jpg'); /* Adjust the path accordingly */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    text-decoration: none;
-}
-
-.aboutus-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Align items center horizontally */
-    margin: auto;
-    width: 100%;
-    text-align: center;
-    background:#f6f7f7;
-    padding-bottom: 30px;
-}
-
-.aboutus-heading {
-    color: #6fc4e3;
+.about-us-container {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 1200px;
+    background-color: #f6f7f7;
+    width: 80%;
+  }
+  
+  .about-us-container h1 {
+    color: rgb(37, 174, 184);
     font-size: 40px;
     font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .about-us-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(110, 156, 241, 0.17);
     margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-}
-
-.underline {
-    width: 61px;
-    height: 6px;
-    background: #a8d8ea;
-    border-radius: 9px;
-}
-
-.aboutus-text {
-    color: #797979;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto; 
+  }
+  
+  .about-us-content p {
     font-size: 19px;
-    margin-top: 20px;
-}
-
-.image-container {
+    color: #797979;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+  
+  .section-container {
     display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
+    justify-content: space-between;
+    margin-top: 40px;
+    margin-bottom: 20px;
+  }
+  
+  .section {
+    flex-basis: 30%;
+    text-align: center;
+  }
 
-.aboutus-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: 6px;
-}
+  .fa-handshake{
+    width: 80px;
+    height: 80px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    font-size: 4.5rem;
+    color: rgb(37, 174, 184);
+  }
+
+  .fa-bullhorn{
+    width: 80px;
+    height: 80px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    font-size: 4.5rem;
+    color: rgb(37, 174, 184);
+  }
+
+  .fa-people-group{
+    width: 80px;
+    height: 80px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    font-size: 4.5rem;
+    color: rgb(37, 174, 184);
+  }
+  
+  /* .section-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: -20px;
+  } */
+  
+  .section h2 {
+    font-size: 24px;
+    color: rgb(37, 174, 184);
+    margin-bottom: 5px;
+  }
+  
+  .section p {
+    font-size: 16px;
+    color: #797979;
+    line-height: 1.5;
+  }
