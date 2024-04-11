@@ -592,52 +592,80 @@ function authenticateUser(req, res, next) {
   }
 }
 
-  //create message
-  app.post('/api/post/msg', authenticateUser, async(req, res)=>{
-    try{ 
-       const{from , to , message} = req.body;
-       const newmessage = await Message.create ({
-            message:message,
-            Chatusers: [from , to],
-            Sender: from
-        })
+// Create message
+app.post('/api/post/msg', authenticateUser, async (req, res) => {
+  try {
+    const { from, to, message } = req.body;
+    const newMessage = await Message.create({
+      message: message,
+      Chatusers: [from, to],
+      Sender: from,
+    });
+    return res.status(200).json(newMessage);
+  } catch (error) {
+    console.error('Error creating message:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
-        return res.status(200).json(newmessage);
+// Get chat messages
+app.get('/api/post/get/chat/msg/:user1Id/:user2Id', async (req, res) => {
+  try {
+    const user1Id = req.params.user1Id;
+    const user2Id = req.params.user2Id;
 
-    }catch (error) {
-       return res.status(500).json({ error: 'Internal server error' });
+    // Find the users by their IDs
+    const user1 = await User.findById(user1Id);
+    const user2 = await User.findById(user2Id);
+
+    if (!user1 || !user2) {
+      return res.status(404).json({ error: 'User not found' });
     }
-  })
 
-  //create message
-  app.get('/api/post/get/chat/msg/:user1Id/:user2Id', async(req, res)=>{
+    const messages = await Message.find({
+      Chatusers: { $all: [user1Id, user2Id] },
+    }).sort({ updatedAt: -1 });
 
-      try{
-          const from = req.params.user1Id;
-          const to = req.params.user2Id;
+    const allMessages = messages.map((msg) => ({
+      myself: msg.Sender.toString() === user1Id,
+      message: msg.message,
+    }));
 
-          const newmessage = await Message.find({
-              Chatusers:{
-                $all:[from , to],
-              }
-          }).sort ({updatedAt: -1 });
+    return res.status(200).json(allMessages);
+  } catch (error) {
+    console.error('Error fetching chat messages:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
-          const allmessage = newmessage.map((msg)=>{
-                return{
-                    myself: msg.Sender.toString() === from,
-                    message : msg.message
-                }
+// // Get user by ID
+// app.get('/api/users/:id', async (req, res) => {
+//   try {
+//     const userId = req.params.id;
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+//     return res.status(200).json(user);
+//   } catch (error) {
+//     console.error('Error fetching user:', error);
+//     return res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
 
-          })
-
-          return res.status(200).json(allmessage);
-
-
-        }catch(error){
-          return res.status(500).json({ error: 'Internal server error' });
-        }
-
-    })
+// Add a new route to fetch users who have donated
+app.get('/api/donators', authenticateUser, async (req, res) => {
+  try {
+    // Find users who have donated based on the donatedByContact field
+    const donators = await User.find({ donatedByContact: { $exists: true, $ne: null } });
+    // Return only necessary user information
+    const donatorData = donators.map(user => ({ _id: user._id, fname: user.fname, lname: user.lname }));
+    res.json(donatorData);
+  } catch (error) {
+    console.error('Error fetching donators:', error);
+    res.status(500).json({ error: 'Failed to fetch donors. Please try again later.' });
+  }
+});
 
 
 const PORT = process.env.PORT || 5321;
