@@ -35,6 +35,9 @@ const User = mongoose.model('UserInfo');
 require('./ProductDetails'); // Assuming ProductDetails.js contains the Product model
 const ProductModel = mongoose.model('ProductInfo');
 
+require('./MessageDetails');
+const Message = mongoose.model('Message');
+
 // Multer storage configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -596,11 +599,20 @@ function authenticateUser(req, res, next) {
 app.post('/api/post/msg', authenticateUser, async (req, res) => {
   try {
     const { from, to, message } = req.body;
-    const newMessage = await Message.create({
+
+    // Check if 'from' and 'to' are valid ObjectId strings
+    if (!mongoose.Types.ObjectId.isValid(from) || !mongoose.Types.ObjectId.isValid(to)) {
+      return res.status(400).json({ error: 'Invalid user IDs' });
+    }
+
+    const newMessage = new Message({
       message: message,
       Chatusers: [from, to],
       Sender: from,
     });
+
+    await newMessage.save();
+
     return res.status(200).json(newMessage);
   } catch (error) {
     console.error('Error creating message:', error);
@@ -614,17 +626,14 @@ app.get('/api/post/get/chat/msg/:user1Id/:user2Id', async (req, res) => {
     const user1Id = req.params.user1Id;
     const user2Id = req.params.user2Id;
 
-    // Find the users by their IDs
-    const user1 = await User.findById(user1Id);
-    const user2 = await User.findById(user2Id);
-
-    if (!user1 || !user2) {
-      return res.status(404).json({ error: 'User not found' });
+    // Check if user1Id and user2Id are valid ObjectId strings
+    if (!mongoose.Types.ObjectId.isValid(user1Id) || !mongoose.Types.ObjectId.isValid(user2Id)) {
+      return res.status(400).json({ error: 'Invalid user IDs' });
     }
 
     const messages = await Message.find({
       Chatusers: { $all: [user1Id, user2Id] },
-    }).sort({ updatedAt: -1 });
+    }).sort({ createdAt: -1 });
 
     const allMessages = messages.map((msg) => ({
       myself: msg.Sender.toString() === user1Id,
@@ -638,32 +647,51 @@ app.get('/api/post/get/chat/msg/:user1Id/:user2Id', async (req, res) => {
   }
 });
 
-// // Get user by ID
-// app.get('/api/users/:id', async (req, res) => {
+
+// // Add a new route to fetch users who have donated
+// app.get('/api/donators', authenticateUser, async (req, res) => {
 //   try {
-//     const userId = req.params.id;
-//     const user = await User.findById(userId);
+//     const donators = await User.find({ donatedByContact: { $exists: true, $ne: null } });
+//     const donatorData = donators.map(user => ({
+//       _id: user._id,
+//       fname: user.fname,
+//       lname: user.lname,
+//       profilePicture: user.profilePicture,
+//     }));
+//     res.json(donatorData);
+//   } catch (error) {
+//     console.error('Error fetching donators:', error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+
+// Get user by donatorId
+// app.get('/api/users/:donatorId', authenticateUser, async (req, res) => {
+//   try {
+//     const donatorId = req.params.donatorId;
+//     const user = await User.findOne({ email: donatorId });
 //     if (!user) {
 //       return res.status(404).json({ error: 'User not found' });
 //     }
 //     return res.status(200).json(user);
 //   } catch (error) {
 //     console.error('Error fetching user:', error);
-//     return res.status(500).json({ error: 'Internal server error' });
+//     return res.status(500).json({ error: 'Failed to fetch user. Please try again later.' });
 //   }
 // });
 
-// Add a new route to fetch users who have donated
-app.get('/api/donators', authenticateUser, async (req, res) => {
+// Get user by donatedByContact (email)
+app.get('/api/products/byContact/:donatedByContact', authenticateUser, async (req, res) => {
   try {
-    // Find users who have donated based on the donatedByContact field
-    const donators = await User.find({ donatedByContact: { $exists: true, $ne: null } });
-    // Return only necessary user information
-    const donatorData = donators.map(user => ({ _id: user._id, fname: user.fname, lname: user.lname }));
-    res.json(donatorData);
+    const donatedByContact = req.params.donatedByContact;
+    const user = await User.findOne({ email: donatedByContact });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    return res.status(200).json(user);
   } catch (error) {
-    console.error('Error fetching donators:', error);
-    res.status(500).json({ error: 'Failed to fetch donors. Please try again later.' });
+    console.error('Error fetching user:', error);
+    return res.status(500).json({ error: 'Failed to fetch user. Please try again later.' });
   }
 });
 

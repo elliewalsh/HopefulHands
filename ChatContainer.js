@@ -1,89 +1,97 @@
 import React, { useEffect, useState } from "react";
 import "./ChatContainer.css";
 
-function ChatContainer({ userData, donatorId }) {
+function ChatContainer({ currentChatUser, currentUser }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [donatorData, setDonatorData] = useState(null);
-
-  useEffect(() => {
-    const fetchDonatorData = async () => {
-      try {
-        const response = await fetch(`http://localhost:5321/api/users/${donatorId}`);
-        const data = await response.json();
-        setDonatorData(data);
-      } catch (error) {
-        console.error('Error fetching donator data:', error);
-      }
-    };
-
-    if (donatorId) {
-      fetchDonatorData();
-    }
-  }, [donatorId]);
 
   const fetchMessageData = async () => {
     try {
-      const token = window.localStorage.getItem('token');
-      if (!token || !donatorData || !userData) return;
-      const response = await fetch(`http://localhost:5321/api/post/get/chat/msg/${userData._id}/${donatorData._id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const token = window.localStorage.getItem("token");
+      if (!token || !currentChatUser || !currentUser) return;
+  
+      const response = await fetch(
+        `http://localhost:5321/api/post/get/chat/msg/${currentUser._id}/${currentChatUser._id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
+  
       const responseData = await response.json();
       if (Array.isArray(responseData)) {
         setMessages(responseData);
       }
     } catch (error) {
-      console.error('Error fetching message data:', error);
+      console.error("Error fetching message data:", error);
     }
   };
 
   useEffect(() => {
-    if (donatorData && userData) {
+    if (currentChatUser && currentUser) {
       fetchMessageData();
     }
-  }, [donatorData, userData]);
+  }, [currentChatUser, currentUser]);
 
   const sendMessage = async () => {
     try {
-      const token = window.localStorage.getItem('token');
-      if (!token || !donatorData || !userData || !message.trim()) return;
-      const response = await fetch('http://localhost:5321/api/post/msg', {
-        method: 'POST',
+      const token = window.localStorage.getItem("token");
+      if (!token || !currentChatUser || !currentUser || !message.trim()) return;
+  
+      const response = await fetch("http://localhost:5321/api/post/msg", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          from: userData._id,
-          to: donatorData._id,
+          from: currentUser._id,
+          to: currentChatUser._id,
           message: message.trim(),
         }),
       });
-      if (response.ok) {
-        setMessage('');
-        fetchMessageData();
-      } else {
-        console.error('Failed to send message:', response.statusText);
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
       }
+  
+      setMessage("");
+      fetchMessageData();
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
     }
+  };
+
+  const getProfilePictureUrl = (profilePicture) => {
+    if (profilePicture) {
+      return `http://localhost:5321/uploads/${profilePicture}`;
+    }
+    return "";
   };
 
   return (
     <div className="mainChatContainer">
       <div className="contactSection">
-        {donatorData && (
+        {currentChatUser && (
           <div className="donatorContainer">
-            <img src={donatorData.profilePicture} className="donatorProfilePicture" alt="" />
+            <img
+              src={getProfilePictureUrl(currentChatUser.profilePicture)}
+              className="donatorProfilePicture"
+              alt={`${currentChatUser.fname} ${currentChatUser.lname}'s profile picture`}
+            />
             <div>
-              <p>{donatorData.fname} {donatorData.lname}</p>
-              <p>Open your message</p>
+              <p>
+                {currentChatUser.fname} {currentChatUser.lname}
+              </p>
             </div>
           </div>
         )}
@@ -91,9 +99,13 @@ function ChatContainer({ userData, donatorId }) {
       <div className="chatSection">
         <div className="msgContainer">
           {messages.map((msg, index) => (
-            <div key={index} className={`msg ${msg.myself ? 'right' : 'left'}`}>
+            <div key={index} className={`msg ${msg.myself ? "right" : "left"}`}>
               <img
-                src={msg.myself ? userData.profilePicture : donatorData?.profilePicture}
+                src={
+                  msg.myself
+                    ? getProfilePictureUrl(currentUser.profilePicture)
+                    : getProfilePictureUrl(currentChatUser?.profilePicture)
+                }
                 className="chatuserProfile"
                 alt=""
               />
