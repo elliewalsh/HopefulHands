@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./ChatContainer.css";
 
 function ChatContainer({ currentChatUser, currentUser }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const messagesEndRef = useRef(null);
+
+  // const scrollToBottom = () => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // };
 
   const fetchMessageData = async () => {
     try {
       const token = window.localStorage.getItem("token");
       if (!token || !currentChatUser || !currentUser) return;
-  
+
       const response = await fetch(
         `http://localhost:5321/api/post/get/chat/msg/${currentUser._id}/${currentChatUser._id}`,
         {
@@ -20,12 +25,12 @@ function ChatContainer({ currentChatUser, currentUser }) {
           },
         }
       );
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error);
       }
-  
+
       const responseData = await response.json();
       if (Array.isArray(responseData)) {
         setMessages(responseData);
@@ -41,11 +46,16 @@ function ChatContainer({ currentChatUser, currentUser }) {
     }
   }, [currentChatUser, currentUser]);
 
+  useEffect(() => {
+    const chatContainer = document.getElementById("chat-container");
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }, [messages]);
+
   const sendMessage = async () => {
     try {
       const token = window.localStorage.getItem("token");
       if (!token || !currentChatUser || !currentUser || !message.trim()) return;
-  
+
       const response = await fetch("http://localhost:5321/api/post/msg", {
         method: "POST",
         headers: {
@@ -58,12 +68,12 @@ function ChatContainer({ currentChatUser, currentUser }) {
           message: message.trim(),
         }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error);
       }
-  
+
       setMessage("");
       fetchMessageData();
     } catch (error) {
@@ -90,29 +100,29 @@ function ChatContainer({ currentChatUser, currentUser }) {
             />
             <div>
               <p>
-                {currentChatUser.fname} {currentChatUser.lname}
+                {currentChatUser.fname} {currentChatUser.lname} 
               </p>
             </div>
           </div>
         )}
       </div>
       <div className="chatSection">
-        <div className="msgContainer">
-          {messages.map((msg, index) => (
-            <div key={index} className={`msg ${msg.myself ? "right" : "left"}`}>
-              <img
-                src={
-                  msg.myself
-                    ? getProfilePictureUrl(currentUser.profilePicture)
-                    : getProfilePictureUrl(currentChatUser?.profilePicture)
-                }
-                className="chatuserProfile"
-                alt=""
-              />
-              <p className="msgTxt">{msg.message}</p>
-            </div>
-          ))}
-        </div>
+      <div id="chat-container" className="msgContainer">
+  {messages.map((msg, index) => (
+    <div key={index} className={`msg ${msg.myself ? "right" : "left"}`}>
+      <img
+        src={
+          msg.myself
+            ? getProfilePictureUrl(currentUser.profilePicture)
+            : getProfilePictureUrl(currentChatUser?.profilePicture)
+        }
+        className="chatuserProfile"
+        alt=""
+      />
+      <p className="msgTxt">{msg.message}</p>
+    </div>
+  ))}
+</div>
         <div className="msgSenderContainer">
           <input
             type="text"
@@ -131,3 +141,4 @@ function ChatContainer({ currentChatUser, currentUser }) {
 }
 
 export default ChatContainer;
+ 

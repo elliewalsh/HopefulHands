@@ -26,10 +26,7 @@ import TermsOfService from "./components/pages/TermsOfService";
 function App() {
   const ADMIN_USER = ["Admin", "admin"];
   const userData = useUser();
-  
   const userType = userData ? userData.userType : null;
-
-  console.log(userData);
 
   return (
     <>
@@ -43,47 +40,27 @@ function App() {
           <Route path="/testimonials" exact component={Testimonials} />
           <Route path="/terms-of-service" exact component={TermsOfService} />
           <Route path="/manage-users" exact component={ManageUsers} />
-         
-          {/* Pass userData to Chatbox */}
-          <Route
-            path="/chatbox"
-            render={(props) => <Chatbox userData={userData} {...props} />}
-          />
+          <Route path="/chatbox" render={(props) => <Chatbox userData={userData} {...props} />} />
+          {/* <Route path="/chatbox" exact component={Chatbox} /> */}
           <Route path="/sign-up" exact component={SignUp} />
           <Route path="/login" exact component={Login} />
           <Route path="/reset-password" exact component={ResetPassword} />
           <Route path="/account" exact component={Account} />
-          {ADMIN_USER.includes(userType) ? (
-            <Route path="/products" component={Products} />
-          ) : (
-            <Route path="/productdisplay" component={ProductDisplay} />
-          )}
-{/* <Route
+          <Route path="/productdisplay" exact component={ProductDisplay} />
+          <Route
             path="/products"
-            render={(props) => {
-              return ADMIN_USER.includes(userData?.userType) ? (
+            render={(props) =>
+              ADMIN_USER.includes(userType) ? (
                 <Products {...props} />
               ) : (
-                <Redirect to="/productdisplay" />
-              );
-            }}
-          /> */}
-
-
+                <Products {...props} />
+              )
+            }
+          />
           <Route path="/productinfo/:id" component={ProductInfo} />
           <Route path="/create" exact component={CreateDonation} />
           <Route path="/update/:id" exact component={UpdateDonation} />
           <Route path="/delete/:id" exact component={DeleteDonation} />
-          {/* <Route
-            path="/manage-users"
-            render={(props) =>
-              ADMIN_USER.includes(userData?.userType) ? (
-                <ManageUsers {...props} />
-              ) : (
-                <Redirect to="/manage-users" />
-              )
-            }
-          /> */}
         </Route>
         <Footer />
       </Router>

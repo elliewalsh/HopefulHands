@@ -1,39 +1,33 @@
-.mainChatContainer{
+.mainChatContainer {
     flex: 2.8;
     background-color: white;
     display: flex;
     box-shadow: 0 10px 30px rgba(110, 156, 241, 0.17);
     width: 10px;
-    
-    
-}
-
-.userProfile{
+  }
+  
+  .userProfile {
     width: 45px;
     height: 45px;
     border-radius: 50%;
-}
-
-.chatuserProfile {
+  }
+  
+  .chatuserProfile {
     width: 50px;
     height: 38px;
     border-radius: 50%;
     object-fit: cover;
     margin-left: 10px;
-}
-
-.msgContainer{
+  }
+  
+  .msgContainer {
     height: 60vh;
-    overflow:hidden;
+    overflow: hidden;
     overflow-y: scroll;
     width: 100%;
-    
-    
-    
-    
-}
-
-.msgInput{
+  }
+  
+  .msgInput {
     width: 58pc;
     padding: 10px;
     margin-top: 10px;
@@ -41,9 +35,9 @@
     border: none;
     border-radius: 10px;
     margin-top: 0px;
-}
-
-.msgSenderContainer{
+  }
+  
+  .msgSenderContainer {
     display: flex;
     width: 60pc;
     background-color: lightgray;
@@ -52,9 +46,9 @@
     margin-left: 30px;
     border-radius: 10px;
     margin-bottom: 10px;
-}
-
-.msg-btn{
+  }
+  
+  .msg-btn {
     width: 130px;
     height: 38px;
     margin-top: 10px;
@@ -63,27 +57,39 @@
     background-color: rgb(37, 174, 184);
     border-radius: 10px;
     margin-top: 0px;
-}
-
-.msg {
+  }
+  
+  .msgContainer {
+    height: 60vh;
+    overflow: hidden;
+    overflow-y: scroll;
+    width: 100%;
+    display: flex;
+    flex-direction: column-reverse; /* Reverse the order of messages */
+  }
+  
+  .msg {
     display: flex;
     align-items: flex-start;
-    margin-left: 30px;
-    background-color: rgb(241 243 241);
+    background-color: rgb(241, 243, 241);
     margin-top: 10px;
     padding: 3px;
     border-radius: 10px;
     width: 40%;
-}
-
-
-.msgTxt{
+  }
+  
+  .msg.right {
+    align-self: flex-end; /* Align to the right */
+  }
+  
+  .msgTxt {
     text-align: start;
     margin-left: 10px;
     margin-top: 0;
-}
-
-.donatorProfilePicture{
+  }
+  
+  .donatorProfilePicture {
     width: 60px;
     height: 60px;
-}
+  }
+  

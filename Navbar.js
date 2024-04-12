@@ -10,6 +10,7 @@ function Navbar() {
   const [button, setButton] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
   const handleClick = () => setClick(!click);
   const closeMobileMenu = () => setClick(false);
@@ -71,6 +72,30 @@ function Navbar() {
   }, []);
 
   window.addEventListener("resize", showButton);
+
+
+
+  useEffect(() => {
+    const fetchUnreadMessageCount = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return; // No token, so the user is not authenticated
+    
+        const response = await axios.get("http://localhost:5321/api/unread-messages", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUnreadMessageCount(response.data.count);
+      } catch (error) {
+        console.error("Failed to fetch unread message count:", error);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchUnreadMessageCount();
+    }
+  }, [isLoggedIn]);
 
   return (
     <>
@@ -163,6 +188,9 @@ function Navbar() {
                 <li className="nav-item">
                   <Link to="/chatbox" className="nav-links" onClick={closeMobileMenu}>
                     Message
+                    {unreadMessageCount > 0 && (
+                      <span className="notification-badge">{unreadMessageCount}</span>
+                    )}
                   </Link>
                 </li>
               </>

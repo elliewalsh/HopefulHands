@@ -647,6 +647,75 @@ app.get('/api/post/get/chat/msg/:user1Id/:user2Id', async (req, res) => {
   }
 });
 
+// Get unread message count for a user
+app.get('/api/unread-messages', authenticateUser, async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const unreadMessageCount = await Message.countDocuments({
+      Chatusers: userId,
+      readBy: { $ne: userId },
+    });
+
+    return res.status(200).json({ count: unreadMessageCount });
+  } catch (error) {
+    console.error('Error fetching unread message count:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get the list of users who have sent messages to the current user
+app.get('/api/chat-users', authenticateUser, async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+
+    const chatUsers = await Message.aggregate([
+      { $match: { Chatusers: currentUserId } },
+      { $group: { _id: '$Sender' } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: '$user' },
+      {
+        $project: {
+          _id: '$user._id',
+          fname: '$user.fname',
+          lname: '$user.lname',
+          profilePicture: '$user.profilePicture',
+        },
+      },
+    ]);
+
+    return res.status(200).json(chatUsers);
+  } catch (error) {
+    console.error('Error fetching chat users:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get chat messages for a user
+app.get('/api/chat-messages/:userId', authenticateUser, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const messages = await Message.find({
+      Chatusers: userId,
+    })
+      .sort({ createdAt: 1 })
+      .populate('Sender', 'fname lname profilePicture'); // Populate the Sender field with user details
+
+    return res.status(200).json(messages);
+  } catch (error) {
+    console.error('Error fetching chat messages:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 // // Add a new route to fetch users who have donated
 // app.get('/api/donators', authenticateUser, async (req, res) => {
@@ -692,6 +761,36 @@ app.get('/api/products/byContact/:donatedByContact', authenticateUser, async (re
   } catch (error) {
     console.error('Error fetching user:', error);
     return res.status(500).json({ error: 'Failed to fetch user. Please try again later.' });
+  }
+});
+
+// Get user by ID
+app.get('/api/users/:userId', authenticateUser, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get product by ID
+app.get('/api/products/:productId', authenticateUser, async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    return res.status(200).json(product);
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
