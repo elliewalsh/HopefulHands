@@ -128,7 +128,7 @@ app.post("/reset-password", async (req, res) => {
 
     res.json({ status: "ok", message: "Password reset successful" });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.json({ status: "error", error: "An error occurred" });
   }
 });
@@ -170,7 +170,7 @@ app.post("/userData", async (req, res) => {
   const { token } = req.body;
   try {
     const user = jwt.verify(token, JWT_SECRET);
-    console.log(user);
+    // console.log(user);
 
     const useremail = user.email;
     User.findOne({ email: useremail })
@@ -208,7 +208,7 @@ app.get("/api/user", async (req, res) => {
 // create product
 app.post('/createProduct', authenticateUser, upload.array('productImages', 5), async (req, res) => {
   try {
-    console.log("Received form data:", req.body);
+    // console.log("Received form data:", req.body);
 
     const { product, description, category, donatedByContact, donatedByName } = req.body;
     const imageUrls = req.files.map(file => file.path.replace("public/", ""));
@@ -420,15 +420,15 @@ app.delete('/api/products/:id', authenticateUser, async (req, res) => {
 app.get('/api/mylistings/:email', authenticateUser, async (req, res) => {
   try {
     const userEmail = req.params.email;
-    console.log("User Email:", userEmail);
+    // console.log("User Email:", userEmail);
 
     const myListings = await ProductModel.find({ donatedByContact: userEmail }).distinct('_id');
     console.log("My Listings:", myListings);
 
     const uniqueListings = await ProductModel.find({ _id: { $in: myListings } });
-    console.log("Unique Listings:", uniqueListings);
+    // console.log("Unique Listings:", uniqueListings);
 
-    console.log("Sending response:", uniqueListings);
+    // console.log("Sending response:", uniqueListings);
     res.json(uniqueListings);
   } catch (error) {
     console.error('Error fetching user listings:', error);
