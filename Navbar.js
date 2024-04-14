@@ -185,16 +185,19 @@ function Navbar() {
                     Donate
                   </Link>
                 </li>
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <Link to="/chatbox" className="nav-links" onClick={closeMobileMenu}>
                     Message
                     {unreadMessageCount > 0 && (
                       <span className="notification-badge">{unreadMessageCount}</span>
                     )}
                   </Link>
-                </li>
+                </li> */}
               </>
+              
             ) : null}
+            
+          
 
             {isLoggedIn ? (
               <li className="nav-item">

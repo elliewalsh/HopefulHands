@@ -164,7 +164,7 @@
 }
 
 .mark-donated-button,
-.unmark-donated-button {
+.view-messages-button {
   width: 100%;
   max-width: 200px;
   margin-top: 5px;
@@ -178,7 +178,7 @@
   margin-bottom: 5px;
 }
 
-.unmark-donated-button {
+.view-messages-button {
   background-color: rgb(37, 174, 184);
   color: white;
 }

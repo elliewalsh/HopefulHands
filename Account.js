@@ -7,7 +7,7 @@ import "./Account.css";
 import UpdateListing from "./UpdateListing";
 import ProfilePicture from "./ProfilePicture";
 
-const Account = () => {
+const Account = (props) => {
   const userData = useUser();
   const [userListings, setUserListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -96,28 +96,6 @@ const Account = () => {
     }
   };
 
-  const handleUnmarkAsDonated = async (listingId) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:5321/api/unmarkAsDonated/${listingId}`,
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setUserListings(
-        userListings.map((listing) =>
-          listing._id === listingId ? { ...listing, isDonated: false } : listing
-        )
-      );
-    } catch (err) {
-      setError("Failed to unmark as donated. Please try again later. " + err);
-    }
-  };
-
   const handleDeleteListing = async (listingId) => {
     try {
       const token = localStorage.getItem("token");
@@ -178,6 +156,14 @@ const Account = () => {
     return description.length > maxLength
       ? `${description.substring(0, maxLength)}...`
       : description;
+  };
+
+  const handleViewMessages = (listing) => {
+    const { donatedByContact } = listing;
+    props.history.push({
+      pathname: '/chatbox',
+      state: { donatedByContact, productId: listing._id },
+    });
   };
 
   return (
@@ -325,11 +311,10 @@ const Account = () => {
                               Mark as Donated
                             </button>
                             <button
-                              onClick={() => handleUnmarkAsDonated(listing._id)}
-                              className="button unmark-donated-button"
-                              disabled={!listing.isDonated}
+                              onClick={() => handleViewMessages(listing)}
+                              className="button view-messages-button"
                             >
-                              Unmark as Donated
+                              View Messages
                             </button>
                           </>
                         )}
